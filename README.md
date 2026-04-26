@@ -85,11 +85,7 @@ Performs semantic search over the uploaded PDF files.
 ### Request
 
 ```bash
-curl -X POST "http://localhost:8000/search" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "your search query"
-  }'
+curl -X GET "http://localhost:8000/search?search_query=your%20search%20query"
 ```
 
 ## File Storage
