@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    working_dir: /app
+    volumes:
+      - .:/app
+      - fastembed_cache:/tmp/fastembed_cache  # here to cache models--qdrant--bge-small-en-v1.5-onnx-q retrieving from HuggingFace
+    ports:
+      - "8000:8000"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PYTHONUNBUFFERED: "1"
+
+  db:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: search
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U app -d search" ]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+  fastembed_cache:
