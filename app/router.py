@@ -22,6 +22,9 @@ def upload_file(file: UploadFile = File(...)):
     if file.filename is None:
         raise HTTPException(status_code=400, detail="filename missing")
 
+    if file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="only pdf files are allowed")
+
     ext = Path(file.filename).suffix
     filename = f"{uuid.uuid4()}{ext}"
 
